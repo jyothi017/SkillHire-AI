@@ -1,0 +1,942 @@
+<title>Interview Prompt Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout concept: a rounded app window on a grey-blue ground (as in the Coursue reference): sidebar, main column with hero + cards + table, right rail with stats and review stages. */
+:root{
+  --bg:#b9c1cc; --canvas:#f5f5fa; --surface:#ffffff; --fg:#15162b; --muted:#6d7188; --line:#ebebf3;
+  --accent:#6c5ce7; --accent-soft:#eeebff; --accent-text:#5845d4; --hero:#6b5ce6; --on-accent:#ffffff;
+  --ok:#14805a; --ok-soft:#e1f5ec; --warn:#9a6212; --warn-soft:#fcf0d6; --danger:#e0592a;
+  --pink:#c23a97; --pink-soft:#fde8f3; --blue:#1f7bc2; --blue-soft:#e2f0fb; --code-bg:#f3f3fa;
+  --shadow:0 1px 2px rgba(20,20,60,.04),0 10px 28px rgba(20,20,60,.05);
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c0d14; --canvas:#12131c; --surface:#1a1b28; --fg:#eceef8; --muted:#9a9db4; --line:#2a2b3d;
+  --accent:#8272f0; --accent-soft:#2b2851; --accent-text:#b4a9ff; --hero:#5a4bd1;
+  --ok:#4cc38f; --ok-soft:#173a2e; --warn:#e6b455; --warn-soft:#3a2f15; --danger:#ff8a5c;
+  --pink:#f08ccc; --pink-soft:#3a1f33; --blue:#6db9f0; --blue-soft:#17304a; --code-bg:#14151f; --shadow:none; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c0d14; --canvas:#12131c; --surface:#1a1b28; --fg:#eceef8; --muted:#9a9db4; --line:#2a2b3d;
+  --accent:#8272f0; --accent-soft:#2b2851; --accent-text:#b4a9ff; --hero:#5a4bd1;
+  --ok:#4cc38f; --ok-soft:#173a2e; --warn:#e6b455; --warn-soft:#3a2f15; --danger:#ff8a5c;
+  --pink:#f08ccc; --pink-soft:#3a1f33; --blue:#6db9f0; --blue-soft:#17304a; --code-bg:#14151f; --shadow:none; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;line-height:1.55;
+  padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4,p,ul,ol{margin:0}
+ul,ol{padding:0;list-style:none}
+h2{font-size:18px;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+h3{font-size:15px;font-weight:700;text-wrap:balance}
+svg{display:block}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+
+.frame{max-width:1500px;margin-inline:auto}
+.app{display:grid;grid-template-columns:224px minmax(0,1fr);background:var(--canvas);border-radius:26px;overflow:hidden;min-height:calc(100vh - 48px)}
+
+/* sidebar */
+.side{background:var(--surface);padding:26px 18px;display:flex;flex-direction:column;gap:6px;border-right:1px solid var(--line);min-width:0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.02em;padding:0 8px 18px}
+.logo-mark{width:34px;height:34px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:var(--on-accent)}
+.grp{font-size:10.5px;font-weight:700;letter-spacing:.12em;color:var(--muted);padding:14px 10px 6px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;font-weight:600;color:var(--muted);text-align:left;white-space:nowrap}
+.nav button:hover{background:var(--accent-soft);color:var(--accent-text)}
+.nav button[aria-current="page"]{background:var(--accent-soft);color:var(--accent-text)}
+.nav svg{width:18px;height:18px;flex:none}
+.roles{display:flex;flex-direction:column;gap:2px}
+.roles button{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px;border-radius:12px;text-align:left}
+.roles button:hover{background:var(--canvas)}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;flex:none}
+.av.a{background:var(--accent-soft);color:var(--accent-text)}.av.b{background:var(--pink-soft);color:var(--pink)}
+.av.c{background:var(--blue-soft);color:var(--blue)}.av.d{background:var(--warn-soft);color:var(--warn)}.av.e{background:var(--ok-soft);color:var(--ok)}
+.roles b{display:block;font-size:12.5px;line-height:1.25}.roles span span{font-size:11px;color:var(--muted)}
+.push{flex:1}
+.logout{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;color:var(--danger);font-weight:600;width:100%;text-align:left}
+.logout:hover{background:var(--canvas)}
+.logout svg{width:18px;height:18px}
+
+/* content grid */
+.content{display:grid;grid-template-columns:minmax(0,1fr) 304px;gap:20px;padding:22px;align-content:start;min-width:0}
+.topbar{grid-column:1/-1;display:flex;align-items:center;gap:14px}
+.search{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:0 18px;height:46px}
+.search svg{width:16px;height:16px;color:var(--muted);flex:none}
+.search input{flex:1;min-width:0;border:0;background:none;font:inherit;color:var(--fg);height:100%}
+.search input::placeholder{color:var(--muted)}
+.search input:focus-visible{outline:none}
+.search:focus-within{outline:2px solid var(--accent)}
+.icon-btn{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;flex:none}
+.icon-btn svg{width:18px;height:18px}
+.user{display:flex;align-items:center;gap:10px;padding-left:14px;border-left:1px solid var(--line);font-weight:700;white-space:nowrap}
+.main{display:flex;flex-direction:column;gap:22px;min-width:0}
+.view{display:flex;flex-direction:column;gap:22px;min-width:0}
+.right{display:flex;flex-direction:column;gap:18px;min-width:0}
+
+.card{background:var(--surface);border-radius:20px;padding:20px;box-shadow:var(--shadow);min-width:0}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.link{color:var(--accent-text);font-weight:700;font-size:12.5px;text-decoration:underline;text-underline-offset:3px}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:var(--hero);color:#fff;border-radius:22px;padding:30px 32px;display:flex;flex-direction:column;gap:18px;align-items:flex-start}
+.hero .eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;opacity:.85}
+.hero h1{font-size:clamp(23px,3vw,34px);line-height:1.15;font-weight:600;letter-spacing:-.02em;max-width:19em;text-wrap:balance;position:relative}
+.hero p{max-width:34em;opacity:.92;position:relative}
+.hero .spark{position:absolute;color:#fff;opacity:.16;pointer-events:none}
+.pill-btn{display:inline-flex;align-items:center;gap:12px;background:#12121f;color:#fff;border-radius:999px;padding:7px 8px 7px 20px;font-weight:600;position:relative}
+.pill-btn i{width:28px;height:28px;border-radius:50%;background:#fff;color:#12121f;display:grid;place-items:center}
+.pill-btn svg{width:14px;height:14px}
+
+/* small stat cards */
+.mini-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.mini{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:14px 16px;border-radius:18px;background:var(--surface);box-shadow:var(--shadow)}
+.mini:hover{outline:2px solid var(--accent-soft)}
+.mini .ic{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;flex:none}
+.mini .ic svg{width:20px;height:20px}
+.mini small{display:block;color:var(--muted);font-size:11.5px}
+.mini b{font-size:15px}
+.ic.a{background:var(--accent-soft);color:var(--accent-text)}.ic.b{background:var(--pink-soft);color:var(--pink)}
+.ic.c{background:var(--blue-soft);color:var(--blue)}.ic.d{background:var(--warn-soft);color:var(--warn)}
+
+/* carousel */
+.arrows{display:flex;gap:8px}
+.arrow{width:28px;height:28px;border-radius:50%;background:var(--canvas);display:grid;place-items:center;color:var(--muted)}
+.arrow.on{background:var(--accent);color:var(--on-accent)}
+.arrow svg{width:14px;height:14px}
+.rail{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:thin}
+.mod{flex:0 0 min(262px,78%);scroll-snap-align:start;text-align:left;display:flex;flex-direction:column;gap:10px}
+.mod .art{height:132px;border-radius:16px;display:grid;place-items:center;position:relative;overflow:hidden}
+.mod .art svg{width:46px;height:46px;position:relative}
+.mod .art::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 15%,rgba(255,255,255,.35),transparent 55%)}
+.art.a{background:linear-gradient(135deg,#7c6cf0,#5240c8);color:#fff}
+.art.b{background:linear-gradient(135deg,#f08ac8,#c23a97);color:#fff}
+.art.c{background:linear-gradient(135deg,#59b1ec,#1f6fb5);color:#fff}
+.art.d{background:linear-gradient(135deg,#f3b95a,#c9741c);color:#fff}
+.art.e{background:linear-gradient(135deg,#4fc79a,#168160);color:#fff}
+.tag{align-self:flex-start;font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:3px 10px;border-radius:7px}
+.tag.a{background:var(--accent-soft);color:var(--accent-text)}.tag.b{background:var(--pink-soft);color:var(--pink)}
+.tag.c{background:var(--blue-soft);color:var(--blue)}.tag.d{background:var(--warn-soft);color:var(--warn)}.tag.e{background:var(--ok-soft);color:var(--ok)}
+.mod h3{font-size:14px;line-height:1.35}
+.mod .foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto}
+
+.pill{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.ill{background:var(--pink-soft);color:var(--pink)}
+
+/* table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.n{font-weight:700;white-space:nowrap}
+.go{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent-text);display:grid;place-items:center}
+.go:hover{background:var(--accent);color:var(--on-accent)}
+.go svg{width:13px;height:13px}
+
+/* right rail */
+.stat{background:var(--surface);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+.ring{position:relative;width:132px;height:132px;margin:6px auto 8px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .mid{position:absolute;inset:14px;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;text-align:center;line-height:1.1}
+.ring .mid b{font-size:26px;letter-spacing:-.02em;color:var(--accent-text)}
+.ring .mid span{font-size:10.5px;color:var(--muted);font-weight:600}
+.greet{text-align:center}
+.greet h3{font-size:17px}
+.chart{margin-top:16px;background:var(--canvas);border-radius:16px;padding:14px 14px 10px}
+.chart-t{font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:8px}
+.plot{position:relative;height:120px;margin-left:24px}
+.grid-l{position:absolute;left:0;right:0;border-top:1px dashed var(--line);}
+.grid-l span{position:absolute;left:-24px;top:-8px;font-size:10px;color:var(--muted);width:18px;text-align:right}
+.bars{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-around;gap:10px;padding-inline:6px}
+.bar{flex:1;max-width:34px;border-radius:7px;background:var(--accent-soft);position:relative}
+.bar.hi{background:var(--accent)}
+.bar em{position:absolute;top:-17px;left:0;right:0;text-align:center;font-style:normal;font-size:10.5px;font-weight:700;color:var(--fg)}
+.xl{display:flex;justify-content:space-around;margin:6px 0 0 24px;font-size:10.5px;color:var(--muted);font-weight:600;padding-inline:6px;gap:10px}
+.xl span{flex:1;max-width:34px;text-align:center}
+.stage{display:flex;align-items:center;gap:10px;padding:8px 0}
+.stage .t{flex:1;min-width:0}.stage b{display:block;font-size:13px;line-height:1.25}.stage small{font-size:11px;color:var(--muted)}
+.chip-btn{border:1px solid var(--accent);color:var(--accent-text);border-radius:999px;padding:3px 12px;font-size:12px;font-weight:600;white-space:nowrap}
+.chip-btn:hover{background:var(--accent-soft)}
+.chip-btn.done{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
+.wide-btn{display:block;width:100%;margin-top:8px;background:var(--accent-soft);color:var(--accent-text);border-radius:999px;padding:11px;font-weight:700;text-align:center}
+.wide-btn:hover{outline:2px solid var(--accent)}
+
+/* content blocks */
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.lead{max-width:68ch;color:var(--fg)}
+.lead+.lead{margin-top:10px}
+.list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.list li{position:relative;padding-left:20px}
+.list li::before{content:"";position:absolute;left:3px;top:.62em;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.list.no li::before{background:var(--danger)}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;counter-reset:s}
+.steps li{background:var(--canvas);border-radius:16px;padding:16px;counter-increment:s}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--on-accent);font-weight:800;font-size:12px;margin-bottom:10px}
+.steps b{display:block;margin-bottom:4px}
+.techs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.techs li{background:var(--canvas);border-radius:14px;padding:14px}
+.techs b{display:block;margin-bottom:3px;color:var(--accent-text)}
+.versus .card{display:flex;flex-direction:column}
+.versus h3{margin-bottom:2px}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--pink-soft);color:var(--fg);border-radius:14px;padding:12px 14px}
+.note.warn{background:var(--warn-soft)}
+.note b{white-space:nowrap}
+
+/* prompts */
+.pcard{display:flex;flex-direction:column;gap:12px}
+.phead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.copy{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--on-accent);border-radius:999px;padding:7px 16px;font-weight:700;font-size:12.5px}
+.copy:hover{filter:brightness(1.08)}
+pre.prompt{margin:0;background:var(--code-bg);border-radius:14px;padding:16px;font-family:var(--mono);font-size:12.5px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;max-height:420px;overflow:auto}
+pre.prompt.short{max-height:none}
+mark{background:var(--accent-soft);color:var(--accent-text);border-radius:4px;padding:0 3px}
+
+/* test plan */
+.tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.box{background:var(--canvas);border-radius:14px;padding:14px;min-width:0}
+.box h4{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.box .list{margin-top:0}
+.box.full{grid-column:1/-1}
+details{background:var(--canvas);border-radius:14px;padding:12px 14px}
+summary{cursor:pointer;font-weight:700}
+details[open] summary{margin-bottom:10px}
+textarea{width:100%;min-height:74px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);font:inherit;padding:10px 12px;resize:vertical}
+td input{width:52px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--canvas);color:var(--fg);font:inherit;text-align:center}
+.avg{font-weight:800;font-variant-numeric:tabular-nums}
+.delta{font-variant-numeric:tabular-nums;font-weight:700}
+.crit td:first-child{font-weight:700;white-space:nowrap}
+
+/* builder */
+.form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.form label,.form fieldset{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:12.5px;min-width:0}
+.form .wide{grid-column:1/-1}
+.form fieldset{border:0;padding:0;margin:0}
+.form legend{padding:0;margin-bottom:6px;font-weight:700;font-size:12.5px}
+.form input[type=text],.form input[type=number],.form select{height:42px;border:1px solid var(--line);border-radius:12px;background:var(--canvas);color:var(--fg);font:inherit;font-weight:500;padding:0 12px;width:100%}
+.form textarea{background:var(--canvas);font-weight:500}
+.chk-row{display:flex;flex-wrap:wrap;gap:8px}
+.chk{display:inline-flex;align-items:center;gap:8px;background:var(--canvas);border-radius:999px;padding:7px 14px;font-weight:600;cursor:pointer}
+.chk input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-btn.on{background:var(--accent);color:var(--on-accent)}
+@media (max-width:1100px){
+  .content{grid-template-columns:minmax(0,1fr)}
+  .right{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;align-items:start}
+}
+@media (max-width:820px){
+  body{padding-block:12px}
+  .app{grid-template-columns:minmax(0,1fr);border-radius:20px}
+  .side{flex-direction:row;align-items:center;overflow-x:auto;padding:12px;border-right:0;border-bottom:1px solid var(--line);gap:10px}
+  .side .logo{padding:0 8px 0 4px;flex:none}
+  .side .grp,.side .push,.side .roles,.side .logout{display:none}
+  .nav{flex-direction:row}
+  .content{padding:14px}
+  .user span{display:none}
+  .user{padding-left:0;border-left:0}
+  .two,.tgrid,.form{grid-template-columns:minmax(0,1fr)}
+  .hero{padding:24px 20px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+<div class="frame">
+<div class="app">
+
+  <aside class="side" aria-label="Sections">
+    <div class="logo"><span class="logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg></span>PromptLab</div>
+    <div class="grp">OVERVIEW</div>
+    <nav class="nav" id="nav"></nav>
+    <div class="grp">TEST ROLES</div>
+    <div class="roles">
+      <button data-go="test"><span class="av a">JD</span><span><b>Java Developer</b><span>Test input 1</span></span></button>
+      <button data-go="test"><span class="av b">DA</span><span><b>Data Analyst</b><span>Test input 2</span></span></button>
+      <button data-go="test"><span class="av c">CE</span><span><b>Cloud Engineer</b><span>Test input 3</span></span></button>
+      <button data-go="test"><span class="av d">PD</span><span><b>Python Developer</b><span>Illustrative example</span></span></button>
+      <button data-go="build"><span class="av e">+</span><span><b>Any other role</b><span>Master prompt asks you</span></span></button>
+    </div>
+    <div class="push"></div>
+    <div class="grp">SETTINGS</div>
+    <button class="logout" id="clear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg><span id="clear-t">Clear my entries</span></button>
+  </aside>
+
+  <div class="content">
+    <header class="topbar">
+      <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Search deliverables, prompts, criteria..." aria-label="Search this page"></label>
+      <button class="icon-btn" id="theme" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button>
+      <div class="user"><span class="av a">YR</span><span>Your review</span></div>
+    </header>
+
+    <main class="main" id="main">
+
+      <!-- DASHBOARD -->
+      <section class="view" id="v-dash">
+        <div class="hero">
+          <svg class="spark" style="right:90px;top:20px" width="150" height="150" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg>
+          <svg class="spark" style="right:10px;bottom:-10px" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg>
+          <svg class="spark" style="right:230px;top:-18px" width="70" height="70" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg>
+          <span class="eyebrow">FOR PLACEMENT STUDENTS</span>
+          <h1>Practise for your placement interview with better prompts</h1>
+          <p>Enter your target role and skills. Get prompts you can paste into any AI chat tool to generate interview questions, find gaps in your practice set, and score your own answers.</p>
+          <button class="pill-btn" data-go="build">Build my prompts <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></i></button>
+        </div>
+
+        <div class="mini-row" id="minis"></div>
+
+        <div>
+          <div class="sec-head"><h2>Study modules</h2>
+            <div class="arrows"><button class="arrow" id="prev" aria-label="Scroll modules back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button><button class="arrow on" id="next" aria-label="Scroll modules forward"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button></div></div>
+          <div class="card"><div class="rail" id="rail"></div></div>
+        </div>
+
+        <div>
+          <div class="sec-head"><h2>Your deliverables</h2><span class="muted small">All 12 required parts</span></div>
+          <div class="card" style="padding:8px 8px 4px"><div class="tbl-wrap"><table>
+            <thead><tr><th>Deliverable</th><th>Where to find it</th><th>Status</th><th>Note</th><th>Open</th></tr></thead>
+            <tbody id="deliv"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <!-- METHOD -->
+      <section class="view" id="v-method" hidden>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Project abstract</h2><span class="tag a">DELIVERABLE 1</span></div>
+          <p class="lead">Interview question sets are often written in a hurry. They can miss important skills, repeat the same idea, and come with no way to score the answers. This study shows how carefully written prompts help people use general AI chat tools to prepare better question sets.</p>
+          <p class="lead">It covers four tasks: generating questions for a job role, checking skill coverage, finding duplicate questions, and writing scoring rubrics. Each prompt is compared with a simpler first version on the same input, then improved. A person must review every question and rubric before use. No software is built. Everything works by typing prompts into an AI chat tool.</p>
+        </div>
+        <div class="two">
+          <div class="card" data-search>
+            <div class="sec-head"><h2>Problem statement</h2><span class="tag a">DELIVERABLE 2</span></div>
+            <p class="lead">Placement teams, trainers, and recruiters need many question sets for many roles. Writing them by hand takes time. Asking an AI for "10 questions for a Java developer" is fast, but the result is hard to trust.</p>
+            <ul class="list">
+              <li>The questions may ignore some required skills.</li>
+              <li>The same idea may appear several times in different words.</li>
+              <li>Difficulty may be uneven for the level.</li>
+              <li>There is no scoring guide, so two interviewers may score the same answer differently.</li>
+              <li>The result changes every time because the request was loose.</li>
+            </ul>
+          </div>
+          <div class="card" data-search>
+            <div class="sec-head"><h2>Objectives</h2><span class="tag a">DELIVERABLE 3</span></div>
+            <ul class="list">
+              <li>Show how better prompt design improves quality, consistency, and usefulness.</li>
+              <li>Give reusable prompts that work for any job role.</li>
+              <li>Report skill coverage honestly. One passing mention is not full assessment.</li>
+              <li>Find exact, similar, and near-identical questions.</li>
+              <li>Produce clear 1 to 5 scoring rubrics.</li>
+              <li>Test each prompt against a simpler one on the same input.</li>
+              <li>Keep a human in charge of every final decision.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="two">
+          <div class="card" data-search><h3>In scope</h3>
+            <ul class="list"><li>Prompt design and prompt testing</li><li>Output evaluation and prompt improvement</li><li>Roles such as Java, Python, Cloud, Data Analyst, Web, or any role you supply</li><li>A human review stage</li></ul></div>
+          <div class="card" data-search><h3>Out of scope</h3>
+            <ul class="list no"><li>Building software, a web application, or writing program code</li><li>Any database, API, backend, or frontend</li><li>Scoring real candidates or making hiring decisions</li></ul></div>
+        </div>
+        <div class="two versus">
+          <div class="card" data-search><span class="tag d">DELIVERABLE 4 · EXISTING APPROACH</span><h3 style="margin-top:10px">Write by hand or ask loosely</h3>
+            <ul class="list"><li>Questions copied from old papers or websites</li><li>One-line AI requests with no rules</li><li>No check for skill gaps or repeats</li><li>Scoring decided on the spot</li></ul></div>
+          <div class="card" data-search><span class="tag e">PROPOSED APPROACH</span><h3 style="margin-top:10px">Structured prompts in a chain</h3>
+            <ul class="list"><li>One master prompt collects six details first</li><li>Four task prompts, each with rules and a fixed output format</li><li>Each prompt is tested and improved on the same input</li><li>A person reviews everything before use</li></ul></div>
+        </div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Prompt-engineering workflow</h2><span class="muted small">Seven steps, in this order</span></div>
+          <ol class="steps">
+            <li><b>Collect role details</b>The master prompt asks for job role, skills, level, round, number of questions, and question types.</li>
+            <li><b>Generate questions</b>A structured prompt writes questions tagged by skill, difficulty, and type.</li>
+            <li><b>Check skill coverage</b>A second prompt counts questions per skill and flags gaps.</li>
+            <li><b>Find duplicates</b>A third prompt flags repeated or overlapping questions.</li>
+            <li><b>Write rubrics</b>A fourth prompt creates a 1 to 5 scoring guide for each question.</li>
+            <li><b>Test and improve</b>Run a simple prompt and an improved prompt on the same input. Score both. Refine.</li>
+            <li><b>Human review</b>A person checks every question and rubric. AI output never decides hiring.</li>
+          </ol>
+        </div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Techniques used</h2><span class="tag a">DELIVERABLE 5</span></div>
+          <ul class="techs">
+            <li><b>Role prompting</b>Tell the AI to act as an interviewer or evaluator so the tone and depth fit the job.</li>
+            <li><b>Input collection</b>The AI asks for missing details instead of guessing them.</li>
+            <li><b>Numbered rules</b>Short rules are easier for the AI to follow than a long paragraph.</li>
+            <li><b>Output format control</b>Tables and fixed sections make results easy to compare and check.</li>
+            <li><b>Negative instructions</b>Say what not to do, such as "do not call a skill fully assessed from one mention".</li>
+            <li><b>Uncertainty flags</b>The AI marks anything it is unsure about, such as "Needs human check".</li>
+            <li><b>Prompt chaining</b>The output of one task becomes the input of the next.</li>
+            <li><b>Iterative refinement</b>Test, find weaknesses, improve the prompt, test again.</li>
+            <li><b>Fixed test input</b>Use the same input for both versions so the comparison is fair.</li>
+            <li><b>Human in the loop</b>A reviewer checks the output before anyone relies on it.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- BUILD -->
+      <section class="view" id="v-build" hidden>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Prompt builder</h2><span class="muted small">Runs in your browser. Nothing is sent anywhere.</span></div>
+          <p class="lead muted">Tell us about the job you are preparing for. The prompts below fill themselves in. Copy one and paste it into any AI chat tool.</p>
+          <div class="chips" id="b-quick" style="margin-top:12px"></div>
+          <div class="form">
+            <label for="b-role">Job role<input id="b-role" type="text" placeholder="e.g. Java Developer" autocomplete="off"></label>
+            <label for="b-level">Experience level<select id="b-level"><option>Fresher</option><option>1 to 3 years</option><option>3 to 5 years</option><option>Senior (5+ years)</option></select></label>
+            <label for="b-round">Interview round<select id="b-round"><option>Screening</option><option selected>Technical</option><option>Managerial</option><option>HR</option></select></label>
+            <label class="wide" for="b-skills">Required skills, separated by commas<textarea id="b-skills" placeholder="e.g. OOP, collections, exception handling, multithreading"></textarea></label>
+            <label for="b-num">Number of questions<input id="b-num" type="number" min="1" max="30" value="8"></label>
+            <fieldset class="wide"><legend>Question types</legend><div class="chk-row" id="b-types"></div></fieldset>
+          </div>
+        </div>
+        <div class="card pcard" data-search>
+          <div class="phead"><div><span class="tag a" id="b-tag"></span><h2 style="margin-top:8px" id="b-title"></h2><p class="muted small" style="margin-top:2px" id="b-use"></p></div><button class="copy" id="b-copy">Copy prompt</button></div>
+          <div class="chips" id="b-tabs" role="group" aria-label="Choose a prompt"></div>
+          <p class="muted small" id="b-hint"></p>
+          <pre class="prompt" id="b-pre"></pre>
+        </div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>How to practise with these prompts</h2></div>
+          <ol class="steps">
+            <li><b>Generate</b>Copy the Questions prompt and paste it into an AI chat tool.</li>
+            <li><b>Answer first</b>Answer each question out loud or in writing before you read any hints.</li>
+            <li><b>Score yourself</b>Use the Rubric prompt on each question and mark your own answer from 1 to 5.</li>
+            <li><b>Find gaps</b>Paste your question list into the Coverage and Duplicates prompts to see what you have missed.</li>
+            <li><b>Verify</b>AI can be wrong. Check facts with a trusted source or ask your trainer.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- PROMPTS -->
+      <section class="view" id="v-prompts" hidden>
+        <div class="note" data-search><b>How to use</b><span>Copy a prompt, paste it into any AI chat tool, then replace each <mark>[highlighted placeholder]</mark> with your own details. The same prompts work for every job role.</span></div>
+        <div id="prompt-list" class="main" style="gap:22px"></div>
+      </section>
+
+      <!-- TEST PLAN -->
+      <section class="view" id="v-test" hidden>
+        <div class="note warn" data-search><b>Status</b><span>No tests have been run. The prompts, checklists, and weaknesses below are a plan. The weaknesses are things to look for, not findings. Real results go in the blank tables on the Evaluation page.</span></div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Small evaluation plan</h2><span class="tag a">3 TEST INPUTS</span></div>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>#</th><th>Job role</th><th>Required skills</th><th>Level</th><th>Round</th><th>Questions</th><th>Types</th></tr></thead>
+            <tbody>
+              <tr><td class="n">1</td><td>Java Developer</td><td>OOP, collections, exception handling, multithreading, Spring basics</td><td>1 to 3 years</td><td>Technical</td><td>10</td><td>Concept, scenario, problem-solving</td></tr>
+              <tr><td class="n">2</td><td>Data Analyst</td><td>SQL, Excel, data cleaning, visualization, statistics</td><td>Fresher</td><td>Technical</td><td>8</td><td>Concept, scenario, real-world</td></tr>
+              <tr><td class="n">3</td><td>Cloud Engineer</td><td>Networking, access control, compute and storage, monitoring, cost control</td><td>3 to 5 years</td><td>Technical</td><td>10</td><td>Scenario, problem-solving, real-world</td></tr>
+            </tbody></table></div>
+          <h3 style="margin-top:18px">How to run each test</h3>
+          <ol class="list" style="margin-top:8px">
+            <li>Pick one test input and keep it unchanged for both prompt versions.</li>
+            <li>Use the same AI tool and model. Write down its name, version, and the date.</li>
+            <li>Open a fresh chat and run the initial prompt. Save the full output.</li>
+            <li>Open another fresh chat and run the improved prompt with the same input. Save the output.</li>
+            <li>For skill coverage, duplicates, and rubrics, use one fixed question set. Plant two known duplicates and one skill with no question, so you know the right answer in advance.</li>
+            <li>Score both outputs with the checklist and the six criteria. Use two reviewers if you can.</li>
+            <li>Repeat each run three times to see how consistent the results are.</li>
+          </ol>
+        </div>
+        <div id="task-list" class="main" style="gap:22px"></div>
+
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Illustrative example</h2><span class="pill ill">Written by hand · not a test result</span></div>
+          <p class="lead muted">This shows what good output could look like. It was not produced by an AI run. Use it to understand the format only.</p>
+          <div class="box full" style="margin-top:14px"><h4>Sample input</h4>
+            <p>Job role: Python Developer. Skills: data structures, OOP, file handling, error handling, unit testing. Level: 1 to 3 years. Round: technical. Questions: 5. Types: concept, scenario, problem-solving, real-world.</p></div>
+          <h3 style="margin:16px 0 8px">Question generation output</h3>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>No.</th><th>Question</th><th>Skill</th><th>Difficulty</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td class="n">1</td><td>What is the difference between a list and a tuple in Python, and when would you choose each?</td><td>Data structures</td><td>Basic</td><td>Concept</td></tr>
+              <tr><td class="n">2</td><td>A script that reads a 2 GB log file stops with a memory error. How would you change it?</td><td>File handling</td><td>Intermediate</td><td>Scenario</td></tr>
+              <tr><td class="n">3</td><td>Explain how inheritance and polymorphism work, using a small example from an online shop.</td><td>OOP</td><td>Intermediate</td><td>Real-world</td></tr>
+              <tr><td class="n">4</td><td>Your code calls an outside service that sometimes fails. How would you handle the errors, and how would you test this?</td><td>Error handling</td><td>Advanced</td><td>Problem-solving</td></tr>
+              <tr><td class="n">5</td><td>Given a list of orders, how would you find the three customers with the highest total spend?</td><td>Data structures</td><td>Intermediate</td><td>Problem-solving</td></tr>
+            </tbody></table></div>
+          <h3 style="margin:16px 0 8px">Skill coverage output</h3>
+          <div class="tbl-wrap"><table>
+            <thead><tr><th>Skill</th><th>Questions</th><th>Count</th><th>Rating</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td class="n">Data structures</td><td>1, 5</td><td>2</td><td>Reasonably assessed</td><td>Two questions at different difficulty levels.</td></tr>
+              <tr><td class="n">OOP</td><td>3</td><td>1</td><td>Lightly assessed</td><td>One question. Design and trade-offs are not tested.</td></tr>
+              <tr><td class="n">File handling</td><td>2</td><td>1</td><td>Lightly assessed</td><td>Only large files. Writing and formats are not tested.</td></tr>
+              <tr><td class="n">Error handling</td><td>4</td><td>1</td><td>Lightly assessed</td><td>One scenario about an unreliable service.</td></tr>
+              <tr><td class="n">Unit testing</td><td>4 (sub-part)</td><td>0</td><td>Mentioned only</td><td>The phrase "how would you test this" is one clause inside question 4. It does not assess the skill.</td></tr>
+            </tbody></table></div>
+          <p class="lead" style="margin-top:10px"><b>Suggestion:</b> add a question such as "How would you write unit tests for a function that calculates a discount?" and replace question 5, since data structures already have two questions.</p>
+          <details style="margin-top:14px"><summary>Rubric example for question 2</summary>
+            <div class="tgrid">
+              <div class="box"><h4>Expected answer points</h4><ul class="list"><li>Read the file line by line or in chunks, not all at once.</li><li>Process each piece, then let it go.</li><li>Use a context manager so the file closes.</li><li>Explain why loading everything uses too much memory.</li><li>Check the fix on a smaller sample first.</li></ul></div>
+              <div class="box"><h4>Scoring scale</h4><ul class="list"><li><b>1</b> Cannot suggest a fix.</li><li><b>2</b> Names the problem, fix is vague.</li><li><b>3</b> Reads line by line but cannot say why.</li><li><b>4</b> Correct fix with a clear reason.</li><li><b>5</b> Correct fix, memory reasoning, chunking, and a way to verify.</li></ul></div>
+              <div class="box"><h4>Common mistakes</h4><ul class="list"><li>Suggesting only "add more memory".</li><li>Loading the whole file into a list first.</li><li>Forgetting to close the file.</li></ul></div>
+              <div class="box"><h4>Strong and weak signs</h4><ul class="list"><li><b>Strong:</b> explains why memory grows and how streaming avoids it.</li><li><b>Weak:</b> guesses at tools without a reason.</li></ul></div>
+            </div></details>
+        </div>
+      </section>
+
+      <!-- EVALUATION -->
+      <section class="view" id="v-eval" hidden>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Evaluation criteria</h2><span class="muted small">Score each from 1 to 5</span></div>
+          <div class="tbl-wrap"><table class="crit">
+            <thead><tr><th>Criterion</th><th>Score 1</th><th>Score 3</th><th>Score 5</th></tr></thead>
+            <tbody>
+              <tr><td>Relevance</td><td>Many questions are off-topic</td><td>Some are generic</td><td>All fit the role and skills</td></tr>
+              <tr><td>Accuracy</td><td>Several factual errors</td><td>Minor errors</td><td>No errors found by the reviewer</td></tr>
+              <tr><td>Format</td><td>Ignores the requested format</td><td>Follows it in part</td><td>Follows it exactly</td></tr>
+              <tr><td>Completeness</td><td>Major parts missing</td><td>Some parts are thin</td><td>Every requested part is present</td></tr>
+              <tr><td>Clarity</td><td>Confusing wording</td><td>Understandable with effort</td><td>Clear and short</td></tr>
+              <tr><td>Consistency</td><td>Three runs differ a lot in quality</td><td>Similar structure, uneven content</td><td>Three runs are equally good</td></tr>
+            </tbody></table></div>
+        </div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Results template</h2><span class="pill warn">Blank. Enter your own scores</span></div>
+          <p class="lead muted" style="margin-bottom:12px">Every cell starts empty. Nothing here is a real result. Averages and differences appear only after you enter scores, and your entries stay in this browser.</p>
+          <div class="tbl-wrap"><table id="results"></table></div>
+        </div>
+      </section>
+
+      <!-- REVIEW -->
+      <section class="view" id="v-review" hidden>
+        <div class="note warn" data-search><b>Rule</b><span>AI output is a draft. Do not use it alone to make hiring decisions. Tick each stage only after a person has checked it.</span></div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Human review stages</h2><span class="muted small" id="rv-count"></span></div>
+          <div id="rv-list"></div>
+        </div>
+      </section>
+
+      <!-- WRAP-UP -->
+      <section class="view" id="v-wrap" hidden>
+        <div class="two">
+          <div class="card" data-search>
+            <div class="sec-head"><h2>Limitations</h2><span class="tag a">DELIVERABLE 11</span></div>
+            <ul class="list">
+              <li>AI can state wrong technical facts with confidence. A subject expert must check them.</li>
+              <li>The same prompt can give different results between runs and between AI tools.</li>
+              <li>The AI may count skill coverage wrongly. Count by hand once.</li>
+              <li>The test plan uses only three roles, so it cannot prove results for every role.</li>
+              <li>Examples marked illustrative were written by hand. They are not test results.</li>
+            </ul>
+          </div>
+          <div class="card" data-search>
+            <div class="sec-head"><h2>Ethical considerations</h2></div>
+            <ul class="list">
+              <li>Never make a hiring decision from AI output alone.</li>
+              <li>Check questions for bias in wording, examples, and assumed background.</li>
+              <li>Do not ask about age, gender, religion, nationality, or family.</li>
+              <li>Do not paste candidate details or private company information into an AI tool.</li>
+              <li>Treat rubrics as guides. Accept valid answers that use a different approach.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Conclusion</h2><span class="tag a">DELIVERABLE 12</span></div>
+          <p class="lead">This study sets out a method for turning a loose request into a reliable process: collect the details, generate tagged questions, check coverage, remove repeats, write rubrics, and send everything through human review. The prompts are reusable for any role.</p>
+          <p class="lead">The study does not yet claim that the improved prompts perform better. That claim depends on the test runs in the plan. Once real scores are entered in the results template, the comparison will show where each improvement helped and where it did not.</p>
+        </div>
+        <div class="card" data-search>
+          <div class="sec-head"><h2>Future enhancements</h2></div>
+          <ul class="techs">
+            <li><b>Role library</b>A shared set of tested skill lists for common roles.</li>
+            <li><b>Tool comparison</b>Run the same prompts in several AI tools and compare.</li>
+            <li><b>Bias checklist</b>A longer fairness check for wording and examples.</li>
+            <li><b>Local languages</b>Prompts that produce questions in other languages.</li>
+            <li><b>Reviewer calibration</b>Sessions where reviewers score the same answers and compare.</li>
+            <li><b>Feedback loop</b>Interviewers report which questions worked and the prompts are updated.</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <aside class="right" aria-label="Summary">
+      <div class="stat">
+        <div class="sec-head" style="margin-bottom:0"><h3>Statistic</h3></div>
+        <div class="ring"><svg viewBox="0 0 132 132"><circle cx="66" cy="66" r="58" fill="none" stroke="var(--accent-soft)" stroke-width="6"/><circle id="ring-c" cx="66" cy="66" r="58" fill="none" stroke="var(--accent)" stroke-width="6" stroke-linecap="round" stroke-dasharray="364.4" stroke-dashoffset="364.4"/></svg>
+          <div class="mid"><div><b id="ring-n">9/12</b><br><span>written</span></div></div></div>
+        <div class="greet"><h3 id="greet">Good morning</h3><p class="muted small" id="greet-sub"></p></div>
+        <div class="chart"><div class="chart-t">Checklist items per task</div>
+          <div class="plot" id="plot"></div><div class="xl" id="xl"></div></div>
+      </div>
+      <div class="stat">
+        <div class="sec-head"><h3>Review stages</h3><button class="link" data-go="review">See all</button></div>
+        <div id="rv-mini"></div>
+        <button class="wide-btn" data-go="review">See all</button>
+      </div>
+    </aside>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const mem={};
+const store={get(k,d){try{const v=localStorage.getItem('ipl:'+k);if(v)return JSON.parse(v)}catch(e){}return k in mem?mem[k]:d},
+  set(k,v){mem[k]=v;try{localStorage.setItem('ipl:'+k,JSON.stringify(v))}catch(e){}},
+  del(k){delete mem[k];try{localStorage.removeItem('ipl:'+k)}catch(e){}}};
+
+const IC={
+ dash:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+ method:'<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h6.5"/>',
+ prompts:'<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7M8.5 14h4"/>',
+ test:'<path d="M9 3h6M10 3v6L5 19a1.5 1.5 0 0 0 1.3 2h11.4A1.5 1.5 0 0 0 19 19l-5-10V3"/><path d="M7.5 15h9"/>',
+ eval:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ review:'<path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
+ wrap:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>',
+ build:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.6-.6-.6-2.6 2.6-2.2Z"/>'
+};
+const svg=(k,extra='')=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ${extra}>${IC[k]}</svg>`;
+const ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>';
+
+const NAV=[['dash','Dashboard'],['build','Prompt builder'],['method','Method'],['prompts','Prompts'],['test','Test plan'],['eval','Evaluation'],['review','Human review'],['wrap','Conclusion']];
+$('#nav').innerHTML=NAV.map(([id,l])=>`<button data-go="${id}">${svg(id)}${l}</button>`).join('');
+
+/* ---------- data ---------- */
+const PROMPTS={
+master:{title:'Reusable master prompt',tag:'DELIVERABLE 6',use:'Use this first. It asks for any missing details, then runs all four stages one at a time.',text:
+`You are an expert technical interviewer, recruitment specialist, and careful AI evaluator. You help placement teams, students, trainers, and recruiters prepare interview questions. You do not make hiring decisions.
+
+MY DETAILS (leave a line empty if you want me to ask you)
+Job role: [job role]
+Required skills: [list of skills]
+Experience or difficulty level: [fresher / 1-3 years / 3-5 years / senior]
+Interview round: [screening / technical / managerial / HR]
+Number of questions: [number]
+Question types: [concept, scenario-based, problem-solving, real-world application]
+
+STEP 0 - CHECK DETAILS
+If any of the six details above is missing, ask me for it in one short message and wait for my reply before you go on.
+
+WORKFLOW
+Do one stage at a time. After each stage, stop and wait until I type "next".
+
+Stage 1 - Questions
+Write the requested number of questions. Name the skill each question tests. Spread the questions across all skills. Mix basic, intermediate, and advanced to suit the level. Include the question types I asked for. Show a table: No. | Question | Skill | Difficulty | Type | What a good answer should show. Mark any question you are unsure about as "Needs human check".
+
+Stage 2 - Skill coverage
+Compare the skills with the questions. For each skill give the question numbers, the count, and a rating: Not covered, Mentioned only, Lightly assessed, or Reasonably assessed. Never call a skill fully assessed because one question mentions it. List skills not covered, missing topics, and one suggestion to fix each gap.
+
+Stage 3 - Duplicates
+Compare every question with every other question. Flag exact duplicates, questions with the same meaning, and questions that test the same competency in nearly the same way. Explain why, say which to keep, and suggest an alternative. Do not flag questions only because they share a topic.
+
+Stage 4 - Rubrics
+For each question write: expected answer points, evaluation criteria, a 1 to 5 scoring scale with one sentence per score, common mistakes, indicators of a strong answer, and indicators of a weak answer.
+
+RULES FOR EVERY STAGE
+- Use simple English.
+- Do not invent facts. If you are unsure, say so.
+- Do not ask about or judge personal background such as age, gender, religion, nationality, or family.
+- End each stage with: "A human reviewer must check this before use."
+
+Start with Step 0 now.`},
+gen:{title:'Question generation prompt',tag:'DELIVERABLE 7A',use:'Use this when you want a tagged question set for a role.',text:
+`Act as an experienced technical interviewer and recruitment specialist.
+
+Job role: [job role]
+Required skills: [list of skills]
+Level: [fresher / 1-3 years / 3-5 years / senior]
+Interview round: [screening / technical / managerial / HR]
+Number of questions: [number]
+Question types wanted: [concept, scenario-based, problem-solving, real-world application]
+
+Task: Write the interview questions.
+
+Rules:
+1. Every question must test at least one skill from the required skills list. Name that skill.
+2. Spread the questions across all required skills. If the number of questions is too small to cover every skill, tell me which skills you left out and why.
+3. Mix basic, intermediate, and advanced questions to suit the level. State the ratio you used.
+4. Include each question type I asked for.
+5. Keep the wording clear and short. Do not put two questions in one.
+6. Do not repeat a question or ask the same thing in different words.
+7. Do not ask about personal background, age, gender, religion, nationality, or family.
+8. If you are not sure a technical detail is correct, mark the question "Needs human check".
+
+Output format: a table with these columns: No. | Question | Skill tested | Difficulty | Question type | What a good answer should show (one line).
+After the table add two lines: the difficulty ratio you used, and any skills not covered.`},
+cov:{title:'Skill coverage prompt',tag:'DELIVERABLE 7B',use:'Use this after you have a question set. Paste the numbered questions.',text:
+`Act as a recruitment specialist who audits interview question sets.
+
+Required skills: [list of skills]
+Question set: [paste the numbered questions]
+
+Task: Compare the required skills with the questions.
+
+Rules:
+1. For each skill, count only the questions whose main purpose is to test that skill. A question that mentions a skill in passing counts as "mentioned", not "assessed".
+2. Never say a skill is fully assessed because one question mentions it. Use this scale: Not covered (0 questions), Mentioned only, Lightly assessed (1 question), Reasonably assessed (2 or more questions at different difficulty levels).
+3. Give a short reason for every rating and list the question numbers you used.
+4. Do not guess. If a question is unclear, say so.
+
+Output format:
+A. Table: Skill | Question numbers | Count | Rating | Reason
+B. Skills not covered
+C. Missing topics inside the skills that are covered
+D. Suggestions: for each gap, give one example question that would fix it and say which existing question could be replaced
+E. One-sentence overall verdict`},
+dup:{title:'Duplicate detection prompt',tag:'DELIVERABLE 7C',use:'Use this to find repeated or overlapping questions.',text:
+`Act as an interview-question reviewer.
+
+Question set: [paste the numbered questions]
+
+Task: Find questions that repeat each other. Check three levels:
+Level 1 - Exact duplicates: the wording is the same or almost the same.
+Level 2 - Same meaning: different words, same question.
+Level 3 - Same competency tested in nearly the same way: a candidate would give essentially the same answer or show the same skill.
+
+Rules:
+1. Compare every question with every other question. Do not stop after the first match.
+2. For each pair or group give the question numbers, the level, and a one or two sentence reason.
+3. Do not flag questions only because they share a topic. Two questions on the same skill at different difficulty or in different situations are fine.
+4. For each flagged group, say which question to keep and write one alternative that tests something different within the same skill.
+5. If you find nothing at a level, write "None found".
+
+Output format: a table with Group | Question numbers | Level | Why they overlap | Keep | Suggested alternative.
+Finish with the total number of flagged groups.`},
+rub:{title:'Rubric creation prompt',tag:'DELIVERABLE 7D',use:'Use this once per question you plan to ask.',text:
+`Act as a senior interviewer who designs fair scoring guides.
+
+Job role: [job role]
+Level: [level]
+Question: [question]
+Skill tested: [skill]
+
+Task: Create an evaluation rubric for this question.
+
+Include:
+1. Expected answer points: the key ideas a correct answer should contain (4 to 6 points)
+2. Evaluation criteria: 3 or 4 things the interviewer should judge, such as accuracy, depth, clarity, and practical thinking
+3. Scoring scale from 1 to 5, with one sentence describing each score
+4. Common mistakes
+5. Indicators of a strong answer
+6. Indicators of a weak answer
+
+Rules:
+- Match the depth to the stated level. Do not expect senior answers from freshers.
+- Base the rubric only on the question. Do not add topics the question did not ask about.
+- Accept more than one correct approach where several exist.
+- Judge answers on content, not on accent, writing style, or confidence.
+- If you are not certain a point is correct, mark it "Verify".`}
+};
+
+const TASKS=[
+{id:'gen',name:'Question generation',tag:'a',initial:'Generate 10 interview questions for a [job role].',
+ format:'A table with six columns (No., Question, Skill tested, Difficulty, Question type, Good answer points), then two lines giving the difficulty ratio and any skills not covered.',
+ checklist:['Every question names a skill from the list','Every required skill has a question, or gaps are declared','Difficulty mix suits the level','All requested question types appear','Number of questions matches the request','No two-in-one or unclear questions','No repeated questions','Technical facts are correct (human check)'],
+ weak:['Some required skills are ignored while popular ones repeat','No difficulty or type labels','Questions are too general for the role','No way to see which skill a question tests'],
+ adds:['Names all six inputs','Rules for skill spread, difficulty, and types','Skill tagging on every question','"Needs human check" flag','Fixed table format']},
+{id:'cov',name:'Skill coverage',tag:'b',initial:'Check if these questions cover the skills: [skills] [questions]',
+ format:'Sections A to E: a rating table, skills not covered, missing topics, suggestions with example questions, and a one-sentence verdict.',
+ checklist:['Every required skill appears in the table','Question counts match a manual count','Passing mentions are not counted as assessment','Each rating has a reason and question numbers','Missing topics are listed','Each gap has a usable suggestion','Output follows sections A to E'],
+ weak:['Says a skill is covered because it appears once','Counts questions wrongly','Suggestions are vague','Structure changes from run to run'],
+ adds:['A defined rating scale','A "mentioned only" level','Question numbers as evidence','Gap fixes with example questions']},
+{id:'dup',name:'Duplicate detection',tag:'c',initial:'Find duplicate questions in this list: [questions]',
+ format:'A table of flagged groups with level, reason, keep decision, and alternative, plus a total count.',
+ checklist:['Exact duplicates are found','Same-meaning pairs are found','Same-competency groups are found','A shared topic alone is not flagged','Each flag has a clear reason','Each flag has a keep decision and an alternative'],
+ weak:['Finds only word-for-word copies','Misses same-meaning pairs','Flags questions only because the topic matches','Gives no alternatives'],
+ adds:['Three duplicate levels','Compare every pair','Rule against flagging shared topics','Keep decision and alternative']},
+{id:'rub',name:'Rubric creation',tag:'d',initial:'Write a rubric for this question: [question]',
+ format:'Six labelled parts: answer points, criteria, 1 to 5 scale, common mistakes, strong indicators, weak indicators.',
+ checklist:['4 to 6 expected answer points','Points are factually correct','1 to 5 scale with a description for each score','Common mistakes are realistic','Strong and weak indicators are specific and different','Depth matches the stated level','More than one valid approach is accepted'],
+ weak:['Answer points are generic and fit any question','Scores 1 to 5 have no meaning','Level is ignored','No common mistakes listed'],
+ adds:['Fixed six-part structure','Level matching','Accepts more than one approach','Judges content, not style','"Verify" flag']}
+];
+const TIC={gen:'prompts',cov:'eval',dup:'method',rub:'review'};
+
+const REVIEW=[
+ {id:'rel',n:'Relevance',c:'Each question fits the job role, level, and round.',a:'a'},
+ {id:'fact',n:'Factual accuracy',c:'Every technical statement and expected answer is correct. Test anything you are unsure of.',a:'b'},
+ {id:'diff',n:'Difficulty',c:'The mix of basic, intermediate, and advanced matches the level. Nothing is far too easy or too hard.',a:'c'},
+ {id:'fair',n:'Fairness',c:'No bias in wording, names, examples, or assumed background. No personal questions.',a:'d'},
+ {id:'cov',n:'Skill coverage',c:'Count the questions per skill yourself and compare with the AI report.',a:'e'},
+ {id:'rub',n:'Rubric quality',c:'Scores are clear, answer points are correct, and other valid approaches are accepted.',a:'a'}];
+
+const DELIV=[
+ ['Project abstract','method','Method','ok',''],['Problem statement','method','Method','ok',''],['Objectives and scope','method','Method','ok',''],
+ ['Existing and proposed approach','method','Method','ok',''],['Prompt engineering techniques','method','Method','ok',''],
+ ['Reusable master prompt','prompts','Prompts','ok',''],['Four task prompts','prompts','Prompts','ok','Generation, coverage, duplicates, rubric'],
+ ['Sample inputs and outputs','test','Test plan','warn','Inputs ready. Outputs shown are illustrative only'],
+ ['Testing and refinement examples','test','Test plan','warn','Plan and checklists ready. Needs your test runs'],
+ ['Evaluation criteria and results tables','eval','Evaluation','warn','Criteria ready. Results table is blank'],
+ ['Limitations and ethics','wrap','Conclusion','ok',''],['Conclusion and future work','wrap','Conclusion','ok','']];
+
+const MODS=[
+ ['build','BUILDER','e','Fill in your role and skills, get prompts ready to paste','ok','Ready','build'],
+ ['method','METHOD','a','Seven steps from role details to reviewed questions','ok','Written','method'],
+ ['prompts','PROMPTS','b','One master prompt and four reusable task prompts','ok','Written','prompts'],
+ ['test','TESTING','c','Same input, two prompt versions, a fair comparison','warn','Needs test runs','test'],
+ ['eval','SCORING','d','Six criteria and a blank results template','warn','Needs test runs','eval'],
+ ['review','REVIEW','e','Six checks a person must complete before use','ok','Written','review'],
+ ['wrap','WRAP-UP','a','Limitations, ethics, conclusion, and next steps','ok','Written','wrap']];
+
+/* ---------- navigation ---------- */
+function show(id){
+  $$('.view').forEach(v=>v.hidden=v.id!=='v-'+id);
+  $$('#nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===id?'page':'false'));
+  $('#q').value=''; filter('');
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'); if(!g) return;
+  show(g.dataset.go);
+  if(g.dataset.anchor){const t=document.getElementById(g.dataset.anchor); if(t) t.scrollIntoView({block:'start'});}
+});
+
+/* ---------- search ---------- */
+function filter(t){
+  t=t.trim().toLowerCase();
+  const v=$$('.view').find(x=>!x.hidden); if(!v) return;
+  $$('[data-search],tr[data-s]',v).forEach(el=>{el.hidden=t?!el.textContent.toLowerCase().includes(t):false});
+  $$('.mini,.mod',v).forEach(el=>{el.hidden=t?!el.textContent.toLowerCase().includes(t):false});
+}
+$('#q').addEventListener('input',e=>filter(e.target.value));
+
+/* ---------- dashboard ---------- */
+$('#minis').innerHTML=[
+ ['gen','a','prompts','Question generation','p-gen'],['cov','c','eval','Skill coverage','p-cov'],
+ ['dup','b','method','Duplicate detection','p-dup'],['rub','d','review','Rubric creation','p-rub']
+].map(([k,c,i,t,a])=>`<button class="mini" data-go="prompts" data-anchor="${a}"><span class="ic ${c}">${svg(i)}</span><span><small>2 prompts</small><b>${t}</b></span></button>`).join('');
+
+$('#rail').innerHTML=MODS.map(([id,tag,c,d,st,stt,go],i)=>`<button class="mod" data-go="${go}"><span class="art ${c}">${svg(id)}</span><span class="tag ${c}">${tag}</span><h3>${NAV.find(n=>n[0]===id)[1]}</h3><span class="muted small">${d}</span><span class="foot"><span class="pill ${st}">${stt}</span><span class="go">${ARROW}</span></span></button>`).join('');
+$('#prev').onclick=()=>$('#rail').scrollBy({left:-280,behavior:'smooth'});
+$('#next').onclick=()=>$('#rail').scrollBy({left:280,behavior:'smooth'});
+
+$('#deliv').innerHTML=DELIV.map((d,i)=>`<tr data-s><td class="n">${i+1}. ${d[0]}</td><td>${d[2]}</td><td><span class="pill ${d[3]}">${d[3]==='ok'?'Written':'Needs your test run'}</span></td><td class="muted">${d[4]||'-'}</td><td><button class="go" data-go="${d[1]}" aria-label="Open ${d[2]}">${ARROW}</button></td></tr>`).join('');
+
+/* ---------- right rail ---------- */
+const ready=DELIV.filter(d=>d[3]==='ok').length, total=DELIV.length;
+$('#ring-n').textContent=ready+'/'+total;
+$('#ring-c').style.strokeDashoffset=(364.4*(1-ready/total)).toFixed(1);
+const h=new Date().getHours();
+$('#greet').textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+$('#greet-sub').textContent=ready+' of '+total+' deliverables are written. '+(total-ready)+' wait for your own test runs.';
+const counts=TASKS.map(t=>t.checklist.length), max=Math.max(...counts), top=Math.ceil(max/4)*4;
+let grid=''; [top,top/2,0].forEach((v,i)=>{grid+=`<div class="grid-l" style="top:${i*50}%"><span>${v}</span></div>`});
+$('#plot').innerHTML=grid+'<div class="bars">'+counts.map(c=>`<div class="bar${c===max?' hi':''}" style="height:${(c/top*100).toFixed(1)}%"><em>${c}</em></div>`).join('')+'</div>';
+$('#xl').innerHTML=['Gen','Cov','Dup','Rub'].map(x=>`<span>${x}</span>`).join('');
+
+/* ---------- prompts view ---------- */
+function hl(t){return esc(t).replace(/\[([^\]]+)\]/g,'<mark>[$1]</mark>')}
+function pcard(id,p){return `<div class="card pcard" id="p-${id}" data-search><div class="phead"><div><span class="tag a">${p.tag}</span><h2 style="margin-top:8px">${p.title}</h2><p class="muted small" style="margin-top:2px">${p.use}</p></div><button class="copy" data-copy="${id}">Copy prompt</button></div><pre class="prompt" id="pre-${id}">${hl(p.text)}</pre></div>`}
+$('#prompt-list').innerHTML=Object.entries(PROMPTS).map(([k,p])=>pcard(k,p)).join('');
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-copy]'); if(!b) return;
+  const id=b.dataset.copy, text=PROMPTS[id].text, pre=$('#pre-'+id);
+  const done=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy prompt',1600)};
+  const fallback=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected. Press Ctrl+C';setTimeout(()=>b.textContent='Copy prompt',2600)};
+  try{navigator.clipboard.writeText(text).then(done,fallback)}catch(err){fallback()}
+});
+
+/* ---------- test plan view ---------- */
+const notes=store.get('notes',{});
+$('#task-list').innerHTML=TASKS.map((t,i)=>`<div class="card pcard" data-search><div class="phead"><div><span class="tag ${t.tag}">TASK ${i+1} OF 4</span><h2 style="margin-top:8px">${t.name}</h2></div><button class="chip-btn" data-go="prompts" data-anchor="p-${t.id}">View improved prompt</button></div>
+ <div class="tgrid">
+  <div class="box"><h4>1. Initial prompt</h4><pre class="prompt short">${hl(t.initial)}</pre></div>
+  <div class="box"><h4>2. Expected output format</h4><p>${t.format}</p></div>
+  <div class="box"><h4>4. Evaluation checklist (${t.checklist.length})</h4><ul class="list">${t.checklist.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+  <div class="box"><h4>5. Weaknesses to look for</h4><ul class="list">${t.weak.map(c=>`<li>${c}</li>`).join('')}<li class="muted">Hypotheses to confirm in testing. Not findings.</li></ul></div>
+  <div class="box"><h4>6. What the improved prompt adds</h4><ul class="list">${t.adds.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+  <div class="box"><h4>3 and 7. Example response and comparison</h4><p class="muted small" style="margin-bottom:8px">Paste what changed between the two runs on the same input. See the illustrative example below for format only.</p><textarea id="note-${t.id}" aria-label="Comparison notes for ${t.name}" placeholder="Write your observations here after testing"></textarea></div>
+ </div></div>`).join('');
+TASKS.forEach(t=>{const el=$('#note-'+t.id); el.value=notes[t.id]||''; el.addEventListener('input',()=>{notes[t.id]=el.value;store.set('notes',notes)})});
+
+/* ---------- evaluation results ---------- */
+const CR=['Relevance','Accuracy','Format','Completeness','Clarity','Consistency'];
+const scores=store.get('scores',{});
+let rt='<thead><tr><th>Task</th><th>Version</th>'+CR.map(c=>`<th>${c}</th>`).join('')+'<th>Average</th><th>Change</th></tr></thead><tbody>';
+TASKS.forEach(t=>['initial','improved'].forEach(v=>{
+  rt+=`<tr><td class="n">${v==='initial'?t.name:''}</td><td>${v==='initial'?'Initial':'Improved'}</td>`+
+  CR.map((c,ci)=>`<td><input type="number" min="1" max="5" step="1" inputmode="numeric" id="s-${t.id}-${v}-${ci}" data-k="${t.id}-${v}-${ci}" aria-label="${t.name}, ${v} prompt, ${c}"></td>`).join('')+
+  `<td class="avg" id="a-${t.id}-${v}">-</td><td class="delta" id="d-${t.id}-${v}">${v==='initial'?'':'-'}</td></tr>`;
+}));
+$('#results').innerHTML=rt+'</tbody>';
+function avg(t,v){const x=CR.map((c,i)=>parseFloat(scores[`${t}-${v}-${i}`])).filter(n=>n>=1&&n<=5);return x.length?x.reduce((a,b)=>a+b,0)/x.length:null}
+function calc(){TASKS.forEach(t=>{const a=avg(t.id,'initial'),b=avg(t.id,'improved');
+  $('#a-'+t.id+'-initial').textContent=a==null?'-':a.toFixed(2);
+  $('#a-'+t.id+'-improved').textContent=b==null?'-':b.toFixed(2);
+  $('#d-'+t.id+'-improved').textContent=(a==null||b==null)?'-':((b-a>=0?'+':'')+(b-a).toFixed(2));})}
+$$('#results input').forEach(inp=>{inp.value=scores[inp.dataset.k]||'';inp.addEventListener('input',()=>{scores[inp.dataset.k]=inp.value;store.set('scores',scores);calc()})});
+calc();
+
+/* ---------- human review ---------- */
+let done=store.get('review',{});
+function renderReview(){
+  const row=(r,full)=>`<div class="stage"><span class="av ${r.a}">${r.n.slice(0,2).toUpperCase()}</span><div class="t"><b>${r.n}</b><small>${full?r.c:(done[r.id]?'Checked':'Not checked yet')}</small></div><button class="chip-btn${done[r.id]?' done':''}" data-rv="${r.id}" aria-pressed="${!!done[r.id]}">${done[r.id]?'Done':'Mark done'}</button></div>`;
+  $('#rv-mini').innerHTML=REVIEW.slice(0,3).map(r=>row(r,false)).join('');
+  $('#rv-list').innerHTML=REVIEW.map(r=>row(r,true)).join('');
+  $('#rv-count').textContent=Object.values(done).filter(Boolean).length+' of '+REVIEW.length+' checked';
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-rv]');if(!b)return;done[b.dataset.rv]=!done[b.dataset.rv];store.set('review',done);renderReview()});
+renderReview();
+
+/* ---------- clear + theme ---------- */
+let armed=null;
+$('#clear').addEventListener('click',()=>{
+  const t=$('#clear-t');
+  if(!armed){t.textContent='Click again to clear';armed=setTimeout(()=>{armed=null;t.textContent='Clear my entries'},3000);return}
+  clearTimeout(armed);armed=null;t.textContent='Cleared';setTimeout(()=>t.textContent='Clear my entries',1500);
+  ['review','scores','notes'].forEach(k=>store.del(k));
+  done={};Object.keys(scores).forEach(k=>delete scores[k]);Object.keys(notes).forEach(k=>delete notes[k]);
+  $$('#results input').forEach(i=>i.value='');$$('#task-list textarea').forEach(i=>i.value='');
+  calc();renderReview();
+});
+$('#theme').addEventListener('click',()=>{
+  const r=document.documentElement, cur=r.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  r.setAttribute('data-theme',cur==='dark'?'light':'dark');
+});
+
+/* ---------- prompt builder ---------- */
+const TYPES=['concept','scenario-based','problem-solving','real-world application'];
+const QUICK={
+ 'Java Developer':'OOP, collections, exception handling, multithreading, Spring basics',
+ 'Python Developer':'data structures, OOP, file handling, error handling, unit testing',
+ 'Cloud Engineer':'networking, access control, compute and storage, monitoring, cost control',
+ 'Data Analyst':'SQL, Excel, data cleaning, visualization, statistics',
+ 'Web Developer':'HTML and CSS, JavaScript, responsive design, APIs, version control'};
+const BT=[['master','Master'],['gen','Questions'],['cov','Coverage'],['dup','Duplicates'],['rub','Rubric']];
+const HINT={master:'Runs all four stages one after another and waits for you to type "next".',
+ gen:'Paste this first to get your practice questions.',
+ cov:'Paste your numbered questions where the highlighted gap is.',
+ dup:'Paste your numbered questions where the highlighted gap is.',
+ rub:'Paste one question where the highlighted gap is. Repeat for each question.'};
+let btab='gen';
+$('#b-quick').innerHTML=Object.keys(QUICK).map(k=>`<button class="chip-btn" data-q="${k}">${k}</button>`).join('');
+$('#b-types').innerHTML=TYPES.map((t,i)=>`<label class="chk"><input type="checkbox" id="b-t-${i}" value="${t}"${i<3?' checked':''}>${t}</label>`).join('');
+$('#b-tabs').innerHTML=BT.map(([k,l])=>`<button class="chip-btn" data-bt="${k}">${l}</button>`).join('');
+function bfill(text){
+  const lvl=$('#b-level').value, types=TYPES.filter((t,i)=>$('#b-t-'+i).checked).join(', ');
+  const rep={'[job role]':$('#b-role').value.trim(),'[list of skills]':$('#b-skills').value.trim(),
+    '[fresher / 1-3 years / 3-5 years / senior]':lvl,'[level]':lvl,'[screening / technical / managerial / HR]':$('#b-round').value,
+    '[number]':$('#b-num').value,'[concept, scenario-based, problem-solving, real-world application]':types};
+  let t=text; for(const k in rep){ if(rep[k]) t=t.split(k).join(rep[k]); } return t;
+}
+function brender(){
+  const p=PROMPTS[btab], full=bfill(p.text);
+  $('#b-tag').textContent=p.tag; $('#b-title').textContent=p.title; $('#b-use').textContent=p.use;
+  $('#b-pre').innerHTML=hl(full);
+  const need=!$('#b-role').value.trim()||!$('#b-skills').value.trim();
+  $('#b-hint').textContent=(need?'Add a job role and skills above to fill the highlighted gaps. ':'')+HINT[btab];
+  $$('#b-tabs button').forEach(b=>{const on=b.dataset.bt===btab;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});
+}
+$('#v-build').addEventListener('input',brender);
+$('#v-build').addEventListener('change',brender);
+document.addEventListener('click',e=>{
+  const q=e.target.closest('[data-q]'); if(q){$('#b-role').value=q.dataset.q;$('#b-skills').value=QUICK[q.dataset.q];brender();return}
+  const t=e.target.closest('[data-bt]'); if(t){btab=t.dataset.bt;brender()}
+});
+$('#b-copy').addEventListener('click',()=>{
+  const b=$('#b-copy'), text=bfill(PROMPTS[btab].text), pre=$('#b-pre');
+  const ok=()=>{b.textContent='Copied';setTimeout(()=>b.textContent='Copy prompt',1600)};
+  const fb=()=>{const r=document.createRange();r.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected. Press Ctrl+C';setTimeout(()=>b.textContent='Copy prompt',2600)};
+  try{navigator.clipboard.writeText(text).then(ok,fb)}catch(err){fb()}
+});
+brender();
+
+/* start */
+const start=(location.hash||'').slice(1);
+show(NAV.some(n=>n[0]===start)?start:'dash');
+})();
+</script>

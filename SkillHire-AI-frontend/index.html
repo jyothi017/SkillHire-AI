@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SkillHire AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<aside class="side" aria-label="Pages">
+  <div class="brand"><div class="logo"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg></div><div><b>SkillHire AI</b><small>Interview Studio</small></div></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="push"></div>
+  <div class="note"><b>Built for every engineer</b><span id="bankNote"></span></div>
+</aside>
+
+<main class="main">
+  <header class="top"><div><small>INTERVIEW PREPARATION AND ASSESSMENT</small><h1 id="title">Interview Dashboard</h1></div>
+    <div class="top-r"><span class="live">● Practice Mode</span><button class="icon-btn" id="theme" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg></button></div></header>
+
+  <section id="home" class="view">
+    <div class="hero">
+      <svg class="spark" style="right:150px;top:-20px" width="140" height="140" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg>
+      <svg class="spark" style="right:20px;bottom:-14px" width="80" height="80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg>
+      <div><span class="pill">ROLE-AWARE • SKILL-AWARE</span>
+        <h2>Prepare for any engineering interview with a personalised practice session.</h2>
+        <p>Select your engineering role, skills and experience level. SkillHire builds questions from its question bank, tracks skill coverage, flags repeated questions and gives you evaluation rubrics.</p>
+        <button class="primary" data-page="practice">Start Interview Practice →</button></div>
+      <div class="heroCircle"><svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C12 0 13.5 9 24 12 13.5 15 12 24 12 24 12 24 10.5 15 0 12 10.5 9 12 0 12 0Z"/></svg></div>
+    </div>
+    <div class="cards" id="homeCards"></div>
+    <div class="card"><h3>How SkillHire works</h3>
+      <div class="flow"><button data-page="practice">Choose Role</button><i>→</i><button data-page="practice">Add Skills</button><i>→</i><button data-page="generate">Generate</button><i>→</i><button data-page="practice">Practise</button><i>→</i><button data-page="rubric">Evaluate</button><i>→</i><button data-page="review">Improve</button></div></div>
+    <div class="card" id="lastCard" hidden></div>
+  </section>
+
+  <section id="practice" class="view" hidden>
+    <div class="intro"><span class="pill">PERSONALISED PRACTICE</span><h2>Set up your interview</h2><p class="muted">Questions are chosen to match your role, skills and level.</p></div>
+    <div class="grid2">
+      <div class="card">
+        <label for="roleSelect">TARGET ENGINEERING ROLE</label><select id="roleSelect"></select>
+        <label for="practiceSkills">YOUR SKILLS (SEPARATE WITH COMMAS)</label><textarea id="practiceSkills"></textarea>
+        <div class="row"><div><label for="pLevel">EXPERIENCE / LEVEL</label><select id="pLevel"><option value="F">Fresher / Campus Placement</option><option value="E">Entry Level</option><option value="1">1–3 Years</option><option value="3">3+ Years</option></select></div>
+        <div><label for="pCount">QUESTIONS</label><select id="pCount"><option>5</option><option selected>8</option><option>10</option></select></div></div>
+        <button class="primary full" id="startPractice">Start Personalised Interview</button>
+        <p class="msg small" id="pMsg" hidden style="margin-top:12px"></p>
+      </div>
+      <div class="card"><h3>Interview sections</h3>
+        <div class="feature"><b>Technical</b><span>Role-specific concepts</span></div>
+        <div class="feature"><b>Coding</b><span>Problem solving and reasoning</span></div>
+        <div class="feature"><b>Scenario</b><span>Real engineering situations</span></div>
+        <div class="feature"><b>Project</b><span>Questions about your projects</span></div>
+        <div class="feature"><b>Behavioral</b><span>HR and communication</span></div>
+        <div class="feature"><b>System design</b><span>Added for 1–3 and 3+ years</span></div>
+      </div>
+    </div>
+    <div class="card" id="practiceArea"></div>
+  </section>
+
+  <section id="generate" class="view" hidden>
+    <div class="intro"><span class="pill">QUESTION ENGINE</span><h2>Generate role-specific questions</h2><p class="muted">One engine for any engineering domain. Skills outside the built-in bank get general template questions, clearly marked.</p></div>
+    <div class="grid2">
+      <div class="card">
+        <label for="genRole">ENGINEERING ROLE</label><input id="genRole" list="roleList" value="Cloud Engineer"><datalist id="roleList"></datalist>
+        <label for="genSkills">REQUIRED SKILLS</label><textarea id="genSkills"></textarea>
+        <div class="row"><div><label for="gCount">QUESTION COUNT</label><select id="gCount"><option>10</option><option>15</option><option>20</option></select></div><div><label for="gDiff">DIFFICULTY</label><select id="gDiff"><option value="">Mixed</option><option value="B">Easy</option><option value="I">Medium</option><option value="A">Hard</option></select></div></div>
+        <label for="gLevel">LEVEL</label><select id="gLevel"><option value="F">Fresher / Campus Placement</option><option value="E">Entry Level</option><option value="1">1–3 Years</option><option value="3">3+ Years</option></select>
+        <button class="primary full" id="genBtn">✦ Generate Questions</button>
+      </div>
+      <div class="card"><h3>Generation controls</h3>
+        <div class="feature"><b>Competency mapping</b><span>Every question is tied to one required skill</span></div>
+        <div class="feature"><b>Repeat detection</b><span>Compares wording on the Review page</span></div>
+        <div class="feature"><b>Balanced difficulty</b><span>Basic, intermediate and advanced by level</span></div>
+        <div class="feature"><b>Human review</b><span>Approve or edit before using</span></div>
+      </div>
+    </div>
+    <div class="card"><h3>Generated questions</h3><div id="genOut"></div></div>
+  </section>
+
+  <section id="coverage" class="view" hidden>
+    <div class="intro"><span class="pill">COMPETENCY MAP</span><h2>Skill coverage</h2><p class="muted">Counts only questions whose main purpose is to test the skill. A passing mention is not an assessment.</p></div>
+    <div id="covOut" class="view"></div>
+  </section>
+
+  <section id="rubric" class="view" hidden>
+    <div class="intro"><span class="pill">EVALUATION</span><h2>Evaluation rubric</h2><p class="muted">Clear criteria help candidates see where to improve and help interviewers score fairly.</p></div>
+    <div class="card"><label for="rubSel">CHOOSE A QUESTION</label><select id="rubSel"></select><div id="rubOut" style="margin-top:18px"></div></div>
+  </section>
+
+  <section id="review" class="view" hidden>
+    <div class="intro"><span class="pill">FINAL CHECK</span><h2>Human review and improvement</h2><p class="muted">Suggestions are reviewed by a person before they count as final assessment content.</p></div>
+    <div class="card"><h3>Add your own question</h3>
+      <div class="grid2" style="gap:12px">
+        <div><label for="cText">QUESTION</label><textarea id="cText" style="min-height:70px"></textarea></div>
+        <div><div class="row"><div><label for="cSkill">SKILL</label><select id="cSkill"></select></div><div><label for="cDiff">DIFFICULTY</label><select id="cDiff"><option value="B">Basic</option><option value="I" selected>Intermediate</option><option value="A">Advanced</option></select></div></div>
+        <label for="cType">TYPE</label><select id="cType"><option value="T">Technical</option><option value="S">Scenario</option><option value="C">Coding</option><option value="D">System design</option><option value="P">Project</option><option value="H">Behavioral</option></select></div>
+      </div>
+      <button class="primary" style="margin-top:14px" id="cAdd">Add question</button>
+    </div>
+    <div class="card"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:6px"><h3 id="revHead" style="margin:0">Questions</h3><button class="ghost" id="copyApproved">Copy approved questions</button></div><div id="revOut"></div><textarea id="exportBox" readonly hidden style="margin-top:12px" aria-label="Approved questions"></textarea>
+      <div class="responsible"><b>Responsible use:</b> SkillHire supports interview preparation and assessment design. It must not be the sole basis for any hiring decision.</div></div>
+    <div class="card"><h3>Repeated questions</h3><div id="dupOut"></div></div>
+    <div class="card"><h3>Reviewer checklist</h3><div id="checks"></div></div>
+  </section>
+</main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

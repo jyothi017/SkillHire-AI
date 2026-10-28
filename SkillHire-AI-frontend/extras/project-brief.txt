@@ -1,0 +1,113 @@
+# Project Title
+**AI-Based Recruitment Interview Question Generator with Skill Coverage Using Prompt Engineering**
+
+## Role
+Act as an expert prompt engineer, technical interviewer, recruitment specialist, and AI evaluator.
+
+## Project Objective
+Help me design a prompt-engineering-based system that generates interview questions for different job roles using general AI tools. The project must focus on prompt design, prompt testing, output evaluation, and prompt improvement. Do not develop a software application or write programming code.
+
+## Target Users
+- College placement teams
+- Students preparing for placements
+- Technical trainers
+- Interviewers and recruiters
+
+## Requirements
+
+### 1. Job Role Analysis
+Ask the user to provide:
+- Job role
+- Required skills
+- Experience or difficulty level
+- Interview round
+- Number of questions
+- Question types
+
+Support different job roles, such as Java Developer, Python Developer, Cloud Engineer, Data Analyst, Web Developer, and other roles provided by the user.
+
+### 2. Competency-Based Question Generation
+Create prompts that generate relevant interview questions based on the skills required for a particular job role.
+
+Include:
+- Basic, intermediate, and advanced questions
+- Technical and conceptual questions
+- Scenario-based questions
+- Problem-solving questions
+- Real-world application questions
+
+### 3. Skill Coverage Analysis
+Design prompts that compare the required skills with the generated questions.
+
+The AI should report:
+- Skills covered
+- Skills not covered
+- Number of questions per skill
+- Missing topics
+- Suggestions to improve coverage
+
+Do not claim that a skill is fully assessed merely because one question mentions it.
+
+### 4. Duplicate Question Detection
+Create prompts to identify:
+- Exact duplicate questions
+- Questions with similar meanings
+- Questions that test the same competency in nearly the same way
+
+Ask the AI to explain why questions may be duplicates and suggest alternatives.
+
+### 5. Evaluation Rubric Generation
+Create prompts that generate evaluation rubrics for interview questions.
+
+Each rubric should include:
+- Expected answer points
+- Evaluation criteria
+- Scoring scale from 1 to 5
+- Common mistakes
+- Indicators of a strong answer
+- Indicators of a weak answer
+
+### 6. Prompt Testing and Improvement
+For each major task, create:
+1. An initial prompt
+2. The expected output format
+3. An example AI response
+4. An evaluation checklist
+5. Identified weaknesses
+6. An improved prompt
+7. A comparison of the initial and improved results
+
+Use the same input when comparing prompts so the improvement can be evaluated fairly.
+
+### 7. Human Review
+Include a human-review stage to verify question relevance, factual accuracy, difficulty, fairness, skill coverage, and rubric quality. Do not use AI output alone to make hiring decisions.
+
+## Required Deliverables
+Prepare the project as a complete prompt engineering study containing:
+
+1. Project abstract
+2. Problem statement
+3. Objectives and scope
+4. Existing approach and proposed approach
+5. Prompt engineering techniques used
+6. Reusable master prompt
+7. Separate prompts for question generation, skill coverage, duplicate detection, and rubric creation
+8. Sample inputs and AI-generated outputs
+9. Prompt testing and refinement examples
+10. Evaluation criteria and results tables
+11. Limitations and ethical considerations
+12. Conclusion and future enhancements
+
+## Important Instructions
+- Do not write programming code.
+- Do not design or implement a web application.
+- Do not require a database, API, backend, or frontend.
+- Use general AI tools that accept natural-language prompts.
+- Explain each step in simple English.
+- Make every prompt reusable for different job roles.
+- Clearly distinguish actual test results from illustrative examples.
+- Do not invent evaluation results. If testing has not been performed, provide a test plan and blank results template.
+- Focus on demonstrating how better prompts improve AI output quality, consistency, and usefulness.
+
+## First Task
+Start by preparing the project methodology and prompt-engineering workflow. Then create the reusable prompts and a small evaluation plan. Do not start any software development.
