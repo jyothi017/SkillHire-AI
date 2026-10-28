@@ -109,10 +109,8 @@ Use the backend's documented database setup instructions before starting the API
 
 ## Author
 
-**Jyothi Jetty**
+**Jetty Jyothi**
 
 GitHub: [jyothi017](https://github.com/jyothi017)
 
-## License
 
-No license has been specified for this project yet.
