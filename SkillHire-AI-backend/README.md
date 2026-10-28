@@ -1,8 +1,8 @@
-# SkillHire AI Backend (Starter)
+# SkillHire AI Backend
 
-Backend for the existing SkillHire AI HTML, CSS, and JavaScript frontend.
+Backend for the SkillHire AI interview question generator, built using Node.js, Express, and PostgreSQL.
 
-## Stack
+## Tech Stack
 
 - Node.js and Express REST API
 - PostgreSQL database
@@ -12,11 +12,11 @@ Backend for the existing SkillHire AI HTML, CSS, and JavaScript frontend.
 
 Install Node.js and PostgreSQL.
 
-Keep your frontend files (`index.html`, `style.css`, and `script.js`) in a separate frontend folder.
+Keep the frontend files (`index.html`, `style.css`, and `script.js`) in a separate frontend folder.
 
 ## 2. Create the Database
 
-Open pgAdmin Query Tool or psql and run:
+Open pgAdmin Query Tool or `psql` and run:
 
 ```sql
 CREATE DATABASE "SkillHire-AI";
@@ -44,11 +44,11 @@ FRONTEND_ORIGIN=http://127.0.0.1:5500
 
 Replace `YOUR_PASSWORD` with your actual PostgreSQL password.
 
-Do not share or commit your `.env` file.
+**Important:** Never share or commit your `.env` file.
 
 ## 4. Start the API
 
-Run:
+Run the development command if it is configured in `package.json`:
 
 ```bash
 npm run dev
@@ -56,19 +56,21 @@ npm run dev
 
 Open this URL to check the API:
 
-http://localhost:5000/api/health
+`http://localhost:5000/api/health`
 
-A successful response indicates that the API and database are connected.
+A successful response should indicate that the API and database are connected.
 
 ## API Endpoints
 
-- `GET /api/health` — Check server and database status.
-- `GET /api/questions?skill=Java&approved=true` — List saved questions.
-- `POST /api/questions` — Save a question.
-- `PATCH /api/questions/:id/review` — Approve or unapprove a question.
-- `POST /api/sessions` — Save an interview session.
-- `GET /api/sessions` — List saved sessions.
-- `POST /api/sessions/:id/results` — Save a self-score for a session question.
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/health` | Check server and database status |
+| GET | `/api/questions?skill=Java&approved=true` | List saved questions |
+| POST | `/api/questions` | Save a question |
+| PATCH | `/api/questions/:id/review` | Approve or unapprove a question |
+| POST | `/api/sessions` | Save an interview session |
+| GET | `/api/sessions` | List saved sessions |
+| POST | `/api/sessions/:id/results` | Save self-scores for session questions |
 
 ## Example: Save a Question
 
@@ -89,6 +91,8 @@ Send a JSON request to `POST http://localhost:5000/api/questions`.
   "approved": false
 }
 ```
+
+Check the backend code for the exact request fields and accepted values.
 
 ## Important Integration Note
 
