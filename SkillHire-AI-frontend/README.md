@@ -1,32 +1,71 @@
-# SkillHire AI - Interview Preparation Website
+# SkillHire AI — Interview Preparation Website
 
-For placement students. Plain HTML, CSS and JavaScript. No install, server, database or API.
+An interview preparation website designed for college placement students. Built using plain HTML, CSS, and JavaScript.
 
 ## Open in VS Code
-1. Unzip this file.
-2. VS Code > File > Open Folder > choose the `SkillHire-AI` folder.
-3. VS Code may suggest "Live Server". Click Install.
-4. Right-click `index.html` > Open with Live Server. Or double-click `index.html` to open it in your browser.
 
-## What is inside
-- `index.html`  page structure (six pages, one visible at a time)
-- `style.css`   look and layout, light and dark theme (colours are tokens at the top)
-- `script.js`   question bank, role skill lists, question builder, skill coverage, repeat detection, rubrics, review
-- `.vscode/`    VS Code settings and the Live Server suggestion
-- `extras/skillhire-ai-single-file.html`  same website in one file (just double-click)
-- `extras/prompt-engineering-study-site.html`  first version: the prompt-engineering study as a dashboard site
-- `extras/project-brief.txt`  your original project brief
+1. Extract the project ZIP file.
+2. Open VS Code and select **File → Open Folder**.
+3. Choose the `SkillHire-AI` folder.
+4. Install the **Live Server** extension if VS Code suggests it.
+5. Right-click `index.html` and select **Open with Live Server**.
 
-## Pages
-Dashboard, Practice Interview, Generate Questions, Skill Coverage, Evaluation Rubrics, Review.
+Alternatively, double-click `index.html` to open the website directly in your browser.
 
-## Add your own questions
-In `script.js` search for `const BANK`. Add entries like:
-`['Question text','B','T','key point one;key point two']`
-Difficulty: B basic, I intermediate, A advanced.
-Type: T technical, S scenario, C coding, D system design, P project, H behavioral.
+## Project Structure
 
-## Notes
-- No live AI model is used. Questions come from the built-in bank. Unknown skills get template questions marked "needs human check".
-- A person must review all questions and rubrics. Do not use this as the only basis for hiring decisions.
-- The font loads from Google Fonts. Offline, a system font is used and everything else still works.
+- `index.html` — Page structure with six sections, one visible at a time.
+- `style.css` — Website styling, layout, and light/dark themes.
+- `script.js` — Built-in question bank, role and skill lists, question generation, skill coverage, duplicate detection, evaluation rubrics, and review features.
+- `.vscode/` — VS Code settings and Live Server recommendations.
+- `extras/skillhire-ai-single-file.html` — Standalone version of the website.
+- `extras/prompt-engineering-study-site.html` — An earlier dashboard-style version of the prompt-engineering study website.
+- `extras/project-brief.txt` — Original project brief.
+
+## Website Pages
+
+1. Dashboard
+2. Practice Interview
+3. Generate Questions
+4. Skill Coverage
+5. Evaluation Rubrics
+6. Review
+
+## Add Your Own Questions
+
+Open `script.js` and search for `const BANK`.
+
+Add questions using this format:
+
+```javascript
+['Question text', 'B', 'T', 'key point one;key point two']
+```
+
+### Difficulty levels
+
+- `B` — Basic
+- `I` — Intermediate
+- `A` — Advanced
+
+### Question types
+
+- `T` — Technical
+- `S` — Scenario
+- `C` — Coding
+- `D` — System Design
+- `P` — Project
+- `H` — Behavioral
+
+## AI and Limitations
+
+- The website does not currently use a live AI model. Questions are generated from the built-in question bank and templates.
+- Unknown skills may receive template-based questions marked for human review.
+- Questions and evaluation rubrics should be reviewed by a person before use.
+- This website should not be used as the sole basis for hiring decisions.
+
+## Browser and Offline Support
+
+The website can run locally without installing a backend server, database, or API.
+
+The font is loaded from Google Fonts. When offline, a system font is used instead.
+
